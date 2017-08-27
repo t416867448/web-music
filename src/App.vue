@@ -1,14 +1,19 @@
 <template>
-  <div id="app">
-    <top></top>
-  </div>
+   <div id="app">
+      <top></top>
+      <tab></tab>
+      <router-view></router-view>
+   </div>
 </template>
 
 <script>
-import top from 'components/header'
+import top from 'components/header/header'
+import tab from 'components/tab/tab'
 export default {
-  name: 'app',
-  components: { top }
+   components: {
+      top,
+      tab
+   }
 }
 </script>
 
