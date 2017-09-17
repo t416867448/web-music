@@ -1,23 +1,39 @@
 <template>
     <div class="recommend">
-        <div class="recommend-content">
-            <!-- <div class="slider-wrapper"> -->
-            <slider v-if="!flag" :sliderdata='sliderdata'></slider>
-            <!-- </div> -->
-            <div class="recommend-list">
-                <h1 class="list-title">热门歌单推荐</h1>
+        <wrapper ref='scroll' class="recommend-content" :data='hotmusic'>
+            <div>
+                <slider v-if="!flag" :sliderdata='sliderdata'></slider>
+                <div class="recommend-list">
+                    <h1 class="list-title">热门歌单推荐</h1>
+                    <ul>
+                        <li class="item" v-for="item in hotmusic">
+                            <div class="icon">
+                                <img @load='loderimg' width="60" height="60" v-lazy="item.imgurl">
+                            </div>
+                            <div class="text">
+                                <h2 class="name" v-html="item.author"></h2>
+                                <p class="desc" v-html="item.dissname"></p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
             </div>
-        </div>
+            <div v-show="!hotmusic.length">
+                <loading></loading>
+            </div>
+        </wrapper>
     </div>
 </template>
 <script>
-// import axios from 'axios'
-import api from '../../common/js/config'
-import slider from 'base/slider'
+import api from 'common/router/config'
+import wrapper from 'base/scroll/scroll'
+import slider from 'base/slider/slider'
+import loading from 'base/loading/loading'
 export default {
     data() {
         return {
             sliderdata: [],
+            hotmusic: [],
             flag: true
         }
     },
@@ -27,17 +43,33 @@ export default {
                 if (data.data.code === 0) {
                     this.sliderdata = data.data.data.slider
                     this.flag = false
-                    console.log(data.data.data.slider)
-                    console.log(this.sliderdata)
                 }
             })
+        },
+        gethotmusicdata() {
+            api.gethotmusic().then((data) => {
+                if (data.data.code === 0) {
+                    this.hotmusic = data.data.data.hotdiss.list
+                    this.flag = false
+                    console.log(this.hotmusic.list)
+                }
+            })
+        },
+        loderimg() {
+            if (!this.callloderimg) {
+                this.callloderimg = true
+                this.$refs.scroll.refresh()
+            }
         }
     },
     mounted() {
         this.getbannerimg()
+        this.gethotmusicdata()
     },
     components: {
-        slider
+        slider,
+        wrapper,
+        loading
     }
 }
 </script>
